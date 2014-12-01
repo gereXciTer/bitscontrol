@@ -1,0 +1,23 @@
+{
+  "name": "bitscontrol",
+  "description": "",
+  "version": "0.0.1",
+  "keywords": [
+    "html5"
+  ],
+  "homepage": "",
+  "author": "",
+  "repository": "",
+  "bugs": "",
+  "licenses": [
+    
+  ],
+  "scripts": {
+  },
+  "dependencies": {
+    "pushserve": "~0.1.6"
+  },
+  "devDependencies": {
+    "express": "~3.3.0"
+  }
+}
