@@ -15,7 +15,9 @@
   "scripts": {
   },
   "dependencies": {
-    "pushserve": "~0.1.6"
+    "pushserve": "~0.1.6",
+    "cors": "~2.5.2",
+    "body-parser": "1.9.3"
   },
   "devDependencies": {
     "express": "~3.3.0"
