@@ -11,27 +11,22 @@ module.exports = Controller.extend({
 
   index: function() {
     this.view = new HomePageView({region: 'main'});
-    $.ajax({
-//       type: 'POST',
-//       url: utils.getUrlBase() + '',
-//       data: JSON.stringify({
-//         module: 'engine',
-//         command: 'module.on()'
-//       }),
-//       contentType: "application/json; charset=utf-8",
-      type: 'POST',
-      url: utils.getUrlBase() + '',
-      traditional: true,
-      contentType: "application/json; charset=utf-8",
-      data: JSON.stringify({
-        module: 'body',
-        command: 'getModule("engine").on();'
-      }),
-      success: function(){
-        
-        
-        
-      }
+      Chaplin.mediator.subscribe('pushCommand', function(){
+      $.ajax({
+        type: 'POST',
+        url: utils.getUrlBase() + '',
+        traditional: true,
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+          module: 'body',
+          command: 'getModule("engine").on();'
+        }),
+        success: function(){
+
+
+
+        }
+      });
     });
   }
 });
