@@ -7,5 +7,8 @@ module.exports = View.extend({
     header: '#header-container',
     main: '#page-container'
   },
-  template: require('./templates/site')
+  template: require('./templates/site'),
+  attach: function(args){
+    this.constructor.__super__.attach.apply(this, arguments);
+  }
 });
