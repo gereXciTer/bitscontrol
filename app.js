@@ -36,53 +36,22 @@ var webserver = pushserve({port: 3333, path: 'frontend/public/', noCors: false},
 
 app.options('*', cors(corsOptions));
 
-var modules = {
-  body: {
-    public: function (){
-      var self = this;
-      return {
-        getModule: function(name){
-          return self.getModule(name);
-        }
-      };
-    },
-    getModules: function(){
-      return {
-        engine: {
-          on: function(){
-            console.log("engine on");
-          },
-          stop: function(){
-            console.log("engine stop");
-          }
-        }
-      }
-    },
-    registerModule: function(name, params){
-      this.modules[name] = params;
-    },
-    getModule: function(name){
-      var modules = this.getModules();
-      if(modules[name]){
-        return modules[name];
-      }
-    }
-    
-  },
-};
+var modules = require('./backend/modules/main.js');
 
 app.get('/', cors(corsOptions), function (req, res) {
   console.log(req.query);
-  res.send('<form action="post" method="POST"><input type="text" name="module"><input type="submit" value="submit"></form>');
+  res.send(200);
 })
 
-app.post('/', cors(corsOptions), function (req, res) {
+app.post('/execute', cors(corsOptions), function (req, res) {
   var currentModule = req.body.module;
   var command = req.body.command;
   
   if(command && currentModule){
-    var context = vm.createContext(modules[currentModule].public());
+    var context = vm.createContext(modules[currentModule]().public());
     vm.runInContext(command, context);
+//     console.log(util.inspect(context));
+    res.send(JSON.stringify(context));
   }
 })
 

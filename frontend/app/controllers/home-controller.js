@@ -11,20 +11,20 @@ module.exports = Controller.extend({
 
   index: function() {
     this.view = new HomePageView({region: 'main'});
-      Chaplin.mediator.subscribe('pushCommand', function(){
+    
+    Chaplin.mediator.subscribe('pushCommand', function(params){
       $.ajax({
         type: 'POST',
-        url: utils.getUrlBase() + '',
+        url: utils.getUrlBase() + 'execute',
         traditional: true,
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
-          module: 'body',
-          command: 'getModule("engine").on();'
+          module: params.module,
+          command: params.command
         }),
-        success: function(){
-
-
-
+        success: function(data){
+          console.log(data)
+//           params.output.html(data)
         }
       });
     });
