@@ -1,6 +1,15 @@
-<textarea class="command" cols=50 rows=14>
-  var engine= getModule("engine");
-  engine.on();
-  engine.move(coords, 45, 1);
-</textarea>
-<a class="pushcommand" href="#">pushCommand</a>
+<div class="row">
+  <div class="small-3 large-2 columns">
+    <a class="pushcommand button small expand" href="#">Go</a>
+  </div>
+  <div class="small-9 large-10 columns">
+    <div class="command" id="editor">
+var engine= getModule("engine");
+engine.on();
+engine.move(coords, 45, 1);
+
+    </div>
+    <p><small>"Ctrl+," for editor settings menu</small></p>
+  </div>
+</div>
+

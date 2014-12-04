@@ -10,7 +10,14 @@ var modules = {
       public: function (){
         var self = this;
         return {
-          coords: {x: 0, y: 0, z: 0},
+          coords: {
+            x: 0, y: 0, z: 0, 
+            stage: require('./stage.js'),
+            checkCoords: function(x, y){
+              console.log(x, y)
+              return this.stage()[Math.ceil(x)][Math.ceil(y)];
+            }
+          },
           getModule: function(name){
             return self.getModule(name);
           }

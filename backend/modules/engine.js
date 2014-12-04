@@ -18,8 +18,15 @@ module.exports = function(params) {
     move: function(coords, angle, distance){
       if(this.engineOn){
         var radians = angle * Math.PI / 180.0;
-        coords.x = coords.x + Math.cos(radians) * distance;
-        coords.y = coords.y + Math.sin(radians) * distance;
+        var x = coords.x + Math.cos(radians) * distance;
+        var y = coords.y + Math.sin(radians) * distance;
+        if(coords.checkCoords(x, y)){
+          coords.x = x;
+          coords.y = y;
+          return true;
+        }else{
+          return false;
+        }
       }
     }
   };
