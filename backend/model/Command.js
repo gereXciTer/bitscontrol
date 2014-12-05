@@ -2,16 +2,15 @@
 * Created with bitscontrol.
 * User: exciter
 * Date: 2014-12-05
-* Time: 01:58 AM
+* Time: 03:35 AM
 */
 exports.create = function(mongoose) {
-  Module = new mongoose.Schema({
-    name: String,
-    code: String,
-    public: String,
+  Command = new mongoose.Schema({
+    module: String,
+    command: String,
     owner: String,
     createdOn: { type: Date, default: Date.now },
     active: Boolean
   });
-  return mongoose.model('Module', Module);
+  return mongoose.model('Command', Command);
 };

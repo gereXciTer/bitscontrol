@@ -46,35 +46,35 @@ app.get('/', cors(corsOptions), function (req, res) {
   res.send(200);
 })
 
-var Module = require('./backend/model/Module.js').create(mongoose);
-app.post('(/api)?/module', cors(corsOptions), function (req, res) {
+var Command = require('./backend/model/Command.js').create(mongoose);
+app.post('(/api)?/command', cors(corsOptions), function (req, res) {
   var currentModule = req.body.module;
   var command = req.body.command;
-  var newModule = new Module({
-    name: req.body.module,
+  var newRecord = new Command({
+    module: req.body.module,
     command: req.body.command
   });
-  var query = Module.where({
-    name: newModule.name
+  var query = Command.where({
+    module: newRecord.module
   });
   query.findOne(function(err, record) {
     if(err) {
       handleError(req, res, err);
     } else if(record != null) {
-      console.log("record " + record.name + " already exists");
+      console.log("record " + record.module + " already exists");
       res.status(400).send({
         errorCode: 400,
-        errorMessage: "record " + record.name + " already exists"
+        errorMessage: "record " + record.module + " already exists"
       });
     } else {
-      newModule.save(function(err) {
+      newRecord.save(function(err) {
         if(err) {
           handleError(req, res, err);
         } else {
-          console.log('created with id: ' + newModule._id);
-          res.set("Link", "</api/module/" + newModule._id + ">; rel=\"created-resource\"");
+          console.log('created with id: ' + newRecord._id);
+          res.set("Link", "</api/command/" + newRecord._id + ">; rel=\"created-resource\"");
           res.status(201).send({
-            moduleId: newModule._id
+            id: newRecord._id
           });
         }
       });
