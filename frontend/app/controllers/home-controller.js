@@ -15,7 +15,7 @@ module.exports = Controller.extend({
     Chaplin.mediator.subscribe('pushCommand', function(params){
       $.ajax({
         type: 'POST',
-        url: utils.getUrlBase() + 'execute',
+        url: utils.getUrlBase() + 'api/module',
         traditional: true,
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
@@ -23,8 +23,8 @@ module.exports = Controller.extend({
           command: params.command
         }),
         success: function(data){
-          console.log(data)
-//           params.output.html(data)
+//           console.log(data)
+          params.output.html(data)
         }
       });
     });

@@ -13,6 +13,9 @@ var cors = require('cors');
 var app = express();
 var bodyParser = require('body-parser');
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/bitscontrol');
+
 var vm = require('vm');
 
 app.use(bodyParser.json());
@@ -43,6 +46,43 @@ app.get('/', cors(corsOptions), function (req, res) {
   res.send(200);
 })
 
+var Module = require('./backend/model/Module.js').create(mongoose);
+app.post('(/api)?/module', cors(corsOptions), function (req, res) {
+  var currentModule = req.body.module;
+  var command = req.body.command;
+  var newModule = new Module({
+    name: req.body.module,
+    command: req.body.command
+  });
+  var query = Module.where({
+    name: newModule.name
+  });
+  query.findOne(function(err, record) {
+    if(err) {
+      handleError(req, res, err);
+    } else if(record != null) {
+      console.log("record " + record.name + " already exists");
+      res.status(400).send({
+        errorCode: 400,
+        errorMessage: "record " + record.name + " already exists"
+      });
+    } else {
+      newModule.save(function(err) {
+        if(err) {
+          handleError(req, res, err);
+        } else {
+          console.log('created with id: ' + newModule._id);
+          res.set("Link", "</api/module/" + newModule._id + ">; rel=\"created-resource\"");
+          res.status(201).send({
+            moduleId: newModule._id
+          });
+        }
+      });
+    }
+  });
+  
+})
+
 app.post('/execute', cors(corsOptions), function (req, res) {
   var currentModule = req.body.module;
   var command = req.body.command;
@@ -63,3 +103,11 @@ app.delete('/user', cors(corsOptions), function (req, res) {
   res.send('Got a DELETE request at /user');
 })
 
+function handleError(req, res, err) {
+  console.log('error: ' + JSON.stringify(err));
+  res.status(500).send({
+    errorCode: 500,
+    errorMessage: "internal server error",
+    innerError: err
+  });
+}

@@ -8,7 +8,12 @@ module.exports = View.extend({
   className: 'home-page',
   template: require('./templates/home'),
   events: {
-    'click .pushcommand': 'pushCommand'
+    'click .pushcommand': 'pushCommand',
+    'click .keystokeshelp': function(e){
+      e.preventDefault();
+      $('#keystokes-help').find('.content').height(Math.round($(window).height()*0.75));
+      $('#keystokes-help').foundation('reveal', 'open');
+    }
   },
   attach: function(args){
     this.constructor.__super__.attach.apply(this, arguments);
@@ -27,7 +32,8 @@ module.exports = View.extend({
     e.preventDefault();
     Chaplin.mediator.publish('pushCommand', {
       command: this.editor.session.getValue(),
-      module: 'body'
+      module: 'body',
+      output: $(e.target).parents('.row').find('.output')
     });
   }
 });
