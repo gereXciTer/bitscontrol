@@ -18,18 +18,27 @@ module.exports = Controller.extend({
         url: utils.getUrlBase() + 'api/command',
         traditional: true,
         contentType: "application/json; charset=utf-8",
+        crossDomain: true,
         data: JSON.stringify({
           module: params.module,
           command: params.command
         }),
         success: function(data){
-//           console.log(data)
           params.output.html('<div data-alert class="alert-box"><a href="#" class="close">&times;</a></div>');
         },
-        error: function(error){
-          params.output.html(error.responseJSON.errorMessage)
+        error: function(jqXHR){
+          if(jqXHR.getResponseHeader('Location')){
+            utils.redirectTo('home#login');
+          }else{
+            params.output.html(jqXHR.responseJSON ? error.responseJSON.errorMessage : 'Unknown error');
+          }
         }
       });
     });
+  },
+  
+  login: function(){
+    var LoginView = require('views/home/login-view');
+    this.view = new LoginView({region: 'main'});
   }
 });
