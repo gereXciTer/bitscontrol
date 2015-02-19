@@ -10,27 +10,27 @@ var utils = require('lib/utils');
 
 module.exports = View.extend({
   autoRender: true,
-  className: 'login-page',
-  template: require('./templates/login'),
+  className: 'register-page',
+  template: require('./templates/register'),
   events: {
-    'click .loginBtn': 'doLogin'
+    'click .registerBtn': 'doRegister'
   },
   attach: function(args){
     this.constructor.__super__.attach.apply(this, arguments);
   },
-  doLogin: function(e){
+  doRegister: function(e){
     e.preventDefault();
     var form = $(e.target).parents('form:first');
     
     $.ajax({
       type: 'POST',
-      url: utils.getUrlBase() + 'login',
+      url: utils.getUrlBase() + 'register',
       traditional: true,
       contentType: "application/json; charset=utf-8",
       crossDomain: true,
       data: JSON.stringify(form.serializeObject()),
       success: function(data){
-        utils.redirectTo("home#index");
+        utils.redirectTo("home#login");
       },
       error: function(jqXHR){
         form.find('.error').html('Login failed');

@@ -23,7 +23,10 @@ exports.basic = function(app, express, mongoose) {
     });
   });
   
-  passport.use(new LocalStrategy(
+  passport.use(new LocalStrategy({
+      usernameField: 'email',
+      passwordField: 'password'
+    },
     function(username, password, done) {
       User.findOne({ username: username }, function(err, user) {
         if (err) { return done(err); }
@@ -67,18 +70,24 @@ exports.basic = function(app, express, mongoose) {
       if (err) { return next(err) }
       if (!user) {
         req.session.messages =  [info.message];
-        return res.redirect('/login')
+        res.setHeader("Access-Control-Expose-Headers", "Location");
+        res.setHeader("Location", "/login");
+        res.send(404);
+        next();
+      }else{
+        req.logIn(user, function(err) {
+          if (err) { return next(err); }
+          res.send(200);
+  //         return res.redirect('/');
+        });
       }
-      req.logIn(user, function(err) {
-        if (err) { return next(err); }
-        return res.redirect('/');
-      });
     })(req, res, next);
   });
 
   app.get('/logout', function(req, res){
     req.logout();
-    res.redirect('/');
+    res.send(200);
+//     res.redirect('/');
   });
   
   return function(req, res, next) {

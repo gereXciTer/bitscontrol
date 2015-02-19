@@ -28,7 +28,7 @@ module.exports = Controller.extend({
         },
         error: function(jqXHR){
           if(jqXHR.getResponseHeader('Location')){
-            utils.redirectTo('home#login');
+            utils.redirectTo({url: jqXHR.getResponseHeader('Location')});
           }else{
             params.output.html(jqXHR.responseJSON ? error.responseJSON.errorMessage : 'Unknown error');
           }
@@ -40,5 +40,11 @@ module.exports = Controller.extend({
   login: function(){
     var LoginView = require('views/home/login-view');
     this.view = new LoginView({region: 'main'});
+  },
+
+  register: function(){
+    var RegisterView = require('views/home/register-view');
+    this.view = new RegisterView({region: 'main'});
   }
+
 });

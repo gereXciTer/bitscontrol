@@ -62,10 +62,6 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.setHeader("Access-Control-Expose-Headers", "Location");
   res.setHeader("Location", "/login");
-//   res.setHeader('Access-Control-Request-Headers', 'accept, content-type');
-//   res.setHeader('Access-Control-Request-Method', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-//   res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-//   res.redirect('/login');
   res.send(404);
 }
 
