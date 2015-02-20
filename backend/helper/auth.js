@@ -10,7 +10,7 @@ var passport = require('passport')
 
 
 
-exports.basic = function(app, express, mongoose) {
+exports.basic = function(app, express, mongoose, serverUrl) {
   var User = require('./../model/User').create(mongoose);
   
   passport.serializeUser(function(user, done) {
@@ -28,7 +28,7 @@ exports.basic = function(app, express, mongoose) {
       passwordField: 'password'
     },
     function(username, password, done) {
-      User.findOne({ username: username }, function(err, user) {
+      User.findOne({ email: username }, function(err, user) {
         if (err) { return done(err); }
         if (!user) {
           return done(null, false, { message: 'Incorrect username.' });
@@ -41,29 +41,30 @@ exports.basic = function(app, express, mongoose) {
     }
   ));
   
-  app.configure(function() {
+  
 //     app.use(express.logger());
-    app.use(express.cookieParser());
-    app.use(express.methodOverride());
-    app.use(express.session({ secret: 'keyboard cat' })); // CHANGE THIS SECRET!
-    // Remember Me middleware
-    app.use( function (req, res, next) {
-      if ( req.method == 'POST' && req.url == '/login' ) {
-        if ( req.body.rememberme ) {
-          req.session.cookie.maxAge = 2592000000; // 30*24*60*60*1000 Rememeber 'me' for 30 days
-        } else {
-          req.session.cookie.expires = false;
-        }
+  var cookieParser = require('cookie-parser');
+  app.use(cookieParser());
+  var methodOverride = require('method-override');
+  app.use(methodOverride());
+  var expressSession = require('express-session');
+  app.use(expressSession({ secret: 'bits control', resave: false, saveUninitialized: false }));
+  // Remember Me middleware
+  app.use( function (req, res, next) {
+    if ( req.method == 'POST' && req.url == '/login' ) {
+      if ( req.body.rememberme ) {
+        req.session.cookie.maxAge = 2592000000; // 30*24*60*60*1000 Rememeber 'me' for 30 days
+      } else {
+        req.session.cookie.expires = false;
       }
-      next();
-    });
-    // Initialize Passport!  Also use passport.session() middleware, to support
-    // persistent login sessions (recommended).
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.use(app.router);
-    app.use(express.static('public'));
+    }
+    next();
   });
+  // Initialize Passport!  Also use passport.session() middleware, to support
+  // persistent login sessions (recommended).
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(express.static('public'));
   
   app.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
@@ -84,6 +85,53 @@ exports.basic = function(app, express, mongoose) {
     })(req, res, next);
   });
 
+  app.post('/register', function(req, res, next) {
+    var params = req.body;
+    if(params.password.length < 6){
+      res.setHeader("Access-Control-Expose-Headers", "Location");
+      res.setHeader("Location", "/register");
+      res.status(412).send("Password too short (at least 6 symbols)");
+      res.end();
+    }else if(params.password !== params.password_repeat){
+      res.setHeader("Access-Control-Expose-Headers", "Location");
+      res.setHeader("Location", "/register");
+      res.status(417).send("Passwords don't match");
+      res.end();
+    }else{
+      var save = function(exists){
+        if(exists){
+          res.send(409);
+        }else{
+          var newUser = new User({
+            username: params.name,
+            email: params.email,
+            password: params.password
+          });
+          newUser.save(function(err) {
+            if(err) {
+              handleError(req, res, err);
+            } else {
+              console.log('created with id: ' + newUser._id);
+              res.set("Link", "</api/user/" + newUser._id + ">; rel=\"created-resource\"");
+              res.status(201).send({
+                id: newUser._id
+              });
+            }
+          });
+        }
+      };
+
+      User.findOne({ email: params.email }, function(err, user) {
+        if (err) { return save(false); }
+        if (!user) {
+          return save(false);
+        }
+        return save(true);
+      });
+    }
+//     next();    
+  });
+
   app.get('/logout', function(req, res){
     req.logout();
     res.send(200);
@@ -91,7 +139,7 @@ exports.basic = function(app, express, mongoose) {
   });
   
   return function(req, res, next) {
-    console.log(2)
+    console.log('auth success')
     next();
   }
 };

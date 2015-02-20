@@ -24,3 +24,7 @@ register('url', function(routeName) {
   var options = params.pop();
   return utils.reverse(routeName, params);
 });
+
+register('srvurl', function(routeName) {
+  return utils.getUrlBase() + routeName;
+});
