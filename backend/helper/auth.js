@@ -73,8 +73,8 @@ exports.basic = function(app, express, mongoose, serverUrl) {
         req.session.messages =  [info.message];
         res.setHeader("Access-Control-Expose-Headers", "Location");
         res.setHeader("Location", "/login");
-        res.send(404);
-        next();
+        res.status(404).send({errorText:"User not found"});;
+        res.end();
       }else{
         req.logIn(user, function(err) {
           if (err) { return next(err); }
@@ -86,21 +86,22 @@ exports.basic = function(app, express, mongoose, serverUrl) {
   });
 
   app.post('/register', function(req, res, next) {
+    console.log(1)
     var params = req.body;
     if(params.password.length < 6){
       res.setHeader("Access-Control-Expose-Headers", "Location");
       res.setHeader("Location", "/register");
-      res.status(412).send("Password too short (at least 6 symbols)");
+      res.status(412).send({errorText:"Password too short (at least 6 symbols)"});
       res.end();
     }else if(params.password !== params.password_repeat){
       res.setHeader("Access-Control-Expose-Headers", "Location");
       res.setHeader("Location", "/register");
-      res.status(417).send("Passwords don't match");
+      res.status(417).send({errorText:"Passwords don't match"});
       res.end();
     }else{
       var save = function(exists){
         if(exists){
-          res.send(409);
+          res.status(409).send({errorText:"User already exists"});
         }else{
           var newUser = new User({
             username: params.name,
@@ -129,7 +130,6 @@ exports.basic = function(app, express, mongoose, serverUrl) {
         return save(true);
       });
     }
-//     next();    
   });
 
   app.get('/logout', function(req, res){

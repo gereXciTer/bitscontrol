@@ -63,17 +63,13 @@ app.get('/', function (req, res) {
   console.log(req.query);
   res.send(200);
 })
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", serverUrl);
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
 app.post('/api/*', ensureAuthenticated);
 app.post('(/api)?/*', cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 var auth = require('./backend/helper/auth.js');
 app.use(auth.basic(app, express, mongoose, serverUrl));
+
 var modules = require('./backend/modules/main');
 var commandController = require('./backend/controller/command').init(app, mongoose);
 

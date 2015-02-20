@@ -33,7 +33,12 @@ module.exports = View.extend({
         utils.redirectTo("home#index");
       },
       error: function(jqXHR){
-        form.find('.error').html('Login failed');
+        try {
+          var responseJSON = JSON.parse(jqXHR.responseText);
+          form.find('.error').html(responseJSON.errorText);
+        } catch(e){
+          form.find('.error').html('Request failed');
+        }
         if(jqXHR.getResponseHeader('Location')){
           utils.redirectTo({url: jqXHR.getResponseHeader('Location')});
         }
