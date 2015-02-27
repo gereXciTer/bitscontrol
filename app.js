@@ -67,6 +67,9 @@ var auth = require('./backend/helper/auth.js');
 app.use(auth.basic(app, express, mongoose));
 
 app.post('/api/*', ensureAuthenticated);
+app.post('/checkauth', ensureAuthenticated, function(req, res, next){
+  res.send(req.user);
+});
 
 var modules = require('./backend/modules/main');
 var commandController = require('./backend/controller/command').init(app, mongoose);

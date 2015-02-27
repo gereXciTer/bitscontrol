@@ -49,7 +49,8 @@ module.exports = Controller.extend({
       traditional: true,
       contentType: "application/json; charset=utf-8",
       success: function(data){
-          utils.redirectTo('home#index');
+        Chaplin.mediator.publish('auth:update');
+        utils.redirectTo('home#index');
       },
       error: function(jqXHR){
         if(jqXHR.getResponseHeader('Location')){

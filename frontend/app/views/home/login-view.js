@@ -29,6 +29,7 @@ module.exports = View.extend({
       contentType: "application/json; charset=utf-8",
       data: JSON.stringify(form.serializeObject()),
       success: function(data, textStatus, XMLHttpRequest){
+        Chaplin.mediator.publish('auth:update');
         utils.redirectTo("home#index");
       },
       error: function(jqXHR){

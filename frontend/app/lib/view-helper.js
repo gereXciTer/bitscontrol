@@ -28,3 +28,20 @@ register('url', function(routeName) {
 register('srvurl', function(routeName) {
   return utils.getUrlBase() + routeName;
 });
+
+register('getLoginBtn', function(routeName) {
+  var url = 'home#login',
+      text = 'Login';
+  $.ajax({
+    type: 'POST',
+    url: utils.getUrlBase() + 'checkauth',
+    contentType: "application/json; charset=utf-8",
+    success: function(data){
+      url = 'home#logout';
+      text = 'Logout (' + data.username + ')';
+    }
+  });
+  
+  return '<a href="' + utils.reverse(url, []) + '">' + text + '</a>';
+});
+
