@@ -7,10 +7,7 @@
 var passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy;
 
-
-
-
-exports.basic = function(app, express, mongoose, serverUrl) {
+exports.basic = function(app, express, mongoose) {
   var User = require('./../model/User').create(mongoose);
   
   passport.serializeUser(function(user, done) {
@@ -33,22 +30,17 @@ exports.basic = function(app, express, mongoose, serverUrl) {
         if (!user) {
           return done(null, false, { message: 'Incorrect username.' });
         }
-        if (!user.validPassword(password)) {
-          return done(null, false, { message: 'Incorrect password.' });
-        }
-        return done(null, user);
+        user.comparePassword(password, function(err, match){
+          if(err || !match){
+            return done(null, false, { message: 'Incorrect password.' });
+          }else{
+            return done(null, user);
+          }
+        });
       });
     }
   ));
-  
-  
-//     app.use(express.logger());
-  var cookieParser = require('cookie-parser');
-  app.use(cookieParser());
-  var methodOverride = require('method-override');
-  app.use(methodOverride());
-  var expressSession = require('express-session');
-  app.use(expressSession({ secret: 'bits control', resave: false, saveUninitialized: false }));
+
   // Remember Me middleware
   app.use( function (req, res, next) {
     if ( req.method == 'POST' && req.url == '/login' ) {
@@ -64,8 +56,8 @@ exports.basic = function(app, express, mongoose, serverUrl) {
   // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use(express.static('public'));
-  
+//   app.use(express.static('public'));
+
   app.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
       if (err) { return next(err) }
@@ -76,17 +68,17 @@ exports.basic = function(app, express, mongoose, serverUrl) {
         res.status(404).send({errorText:"User not found"});;
         res.end();
       }else{
-        req.logIn(user, function(err) {
+        req.login(user, function(err) {
           if (err) { return next(err); }
+          res.setHeader("Access-Control-Expose-Headers", "Location");
+          res.setHeader("Location", "/");
           res.send(200);
-  //         return res.redirect('/');
         });
       }
     })(req, res, next);
   });
 
   app.post('/register', function(req, res, next) {
-    console.log(1)
     var params = req.body;
     if(params.password.length < 6){
       res.setHeader("Access-Control-Expose-Headers", "Location");
@@ -132,14 +124,12 @@ exports.basic = function(app, express, mongoose, serverUrl) {
     }
   });
 
-  app.get('/logout', function(req, res){
+  app.post('/logout', function(req, res){
     req.logout();
     res.send(200);
-//     res.redirect('/');
   });
   
   return function(req, res, next) {
-    console.log('auth success')
     next();
   }
 };

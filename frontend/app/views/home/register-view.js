@@ -27,7 +27,6 @@ module.exports = View.extend({
       url: utils.getUrlBase() + 'register',
       traditional: true,
       contentType: "application/json; charset=utf-8",
-      crossDomain: true,
       data: JSON.stringify(form.serializeObject()),
       success: function(data){
         utils.redirectTo("home#login");

@@ -27,9 +27,8 @@ module.exports = View.extend({
       url: utils.getUrlBase() + 'login',
       traditional: true,
       contentType: "application/json; charset=utf-8",
-      crossDomain: true,
       data: JSON.stringify(form.serializeObject()),
-      success: function(data){
+      success: function(data, textStatus, XMLHttpRequest){
         utils.redirectTo("home#index");
       },
       error: function(jqXHR){
@@ -44,5 +43,6 @@ module.exports = View.extend({
         }
       }
     });
+    
   }
 });

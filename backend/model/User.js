@@ -4,6 +4,9 @@
 * Date: 2014-12-30
 * Time: 10:06 PM
 */
+var bcrypt = require("bcryptjs");
+SALT_WORK_FACTOR = 10;
+
 exports.create = function(mongoose) {
   var userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
@@ -35,5 +38,6 @@ exports.create = function(mongoose) {
       cb(null, isMatch);
     });
   };
+  
   return mongoose.model('User', userSchema);
 };

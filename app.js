@@ -9,7 +9,6 @@
 var util = require('util');
 var pushserve = require('pushserve');
 var express = require('express');
-var cors = require('cors');
 var app = express();
 
 var mongoose = require('mongoose');
@@ -22,17 +21,19 @@ app.use(bodyParser.json());
 
 var server = app.listen(3332);
 
-var serverUrl = (server.address().address == '0.0.0.0') ? 'http://joel-radius.codio.io:3333' : server.address().address + ':' + server.address().port;
-var whitelist = [
-  serverUrl
-];
-var corsOptions = {
-//   exposedHeaders: 'Location',
-  origin: function(origin, callback){
-    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-    callback(null, originIsWhitelisted);
-  }
-};
+var sessionOpts = {
+  saveUninitialized: true, // saved new sessions
+  resave: false, // do not automatically write to the session store
+  secret: 'bits.control',
+  cookie : { httpOnly: true } // configure when sessions expires
+}  
+
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+app.use(session(sessionOpts))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(cookieParser('bitscontrol'))
 
 var pushServePort = 3333;
 
@@ -40,10 +41,8 @@ var webserver = pushserve({port: pushServePort, path: 'frontend/public/', noCors
   console.log('Launched');
 });
 
-// app.post('/login', cors(corsOptions));
-// app.post('/register', cors(corsOptions));
-
 function ensureAuthenticated(req, res, next) {
+  
   if (req.isAuthenticated()) { return next(); }
   res.setHeader("Access-Control-Expose-Headers", "Location");
   res.setHeader("Location", "/login");
@@ -63,12 +62,11 @@ app.get('/', function (req, res) {
   console.log(req.query);
   res.send(200);
 })
-app.post('/api/*', ensureAuthenticated);
-app.post('(/api)?/*', cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 var auth = require('./backend/helper/auth.js');
-app.use(auth.basic(app, express, mongoose, serverUrl));
+app.use(auth.basic(app, express, mongoose));
+
+app.post('/api/*', ensureAuthenticated);
 
 var modules = require('./backend/modules/main');
 var commandController = require('./backend/controller/command').init(app, mongoose);
