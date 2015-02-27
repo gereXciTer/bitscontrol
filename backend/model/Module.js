@@ -4,14 +4,18 @@
 * Date: 2014-12-05
 * Time: 01:58 AM
 */
-exports.create = function(mongoose) {
-  Module = new mongoose.Schema({
+
+var mongoose = require('mongoose');
+
+var moduleSchema = mongoose.Schema({
+
     name: String,
     code: String,
     public: String,
     owner: String,
     createdOn: { type: Date, default: Date.now },
     active: Boolean
-  });
-  return mongoose.model('Module', Module);
-};
+
+});
+
+module.exports = mongoose.model('Module', moduleSchema);

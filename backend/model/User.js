@@ -4,40 +4,63 @@
 * Date: 2014-12-30
 * Time: 10:06 PM
 */
+var mongoose = require('mongoose');
 var bcrypt = require("bcryptjs");
 SALT_WORK_FACTOR = 10;
 
-exports.create = function(mongoose) {
-  var userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true}
-  });
+var userSchema = mongoose.Schema({
 
-  // Bcrypt middleware
-  userSchema.pre('save', function(next) {
-    var user = this;
+    local            : {
+        username: { type: String, required: true, unique: false },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true}
+    },
+    facebook         : {
+        id           : String,
+        token        : String,
+        email        : String,
+        name         : String
+    },
+    twitter          : {
+        id           : String,
+        token        : String,
+        displayName  : String,
+        username     : String
+    },
+    google           : {
+        id           : String,
+        token        : String,
+        email        : String,
+        name         : String
+    }
 
-    if(!user.isModified('password')) return next();
+});
 
-    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-      if(err) return next(err);
 
-      bcrypt.hash(user.password, salt, function(err, hash) {
-        if(err) return next(err);
-        user.password = hash;
-        next();
-      });
-    });
-  });
-
-  // Password verification
-  userSchema.methods.comparePassword = function(candidatePassword, cb) {
-    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-      if(err) return cb(err);
-      cb(null, isMatch);
-    });
-  };
-  
-  return mongoose.model('User', userSchema);
+// generating a hash
+userSchema.methods.generateHash = function(password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
+
+// checking if password is valid
+userSchema.methods.validPassword = function(password) {
+    return bcrypt.compareSync(password, this.local.password);
+};
+
+userSchema.methods.getProfile = function(){
+  var types = ['local', 'facebook', 'twitter', 'google'];
+  var profile;
+  for(var i = 0; i < types.length; i++){
+    if(this[types[i]] && (this[types[i]].name || this[types[i]].username)){
+      profile = this[types[i]];
+    }
+  }
+  if(!profile.username){
+    profile.username = profile.name;
+  }
+  return profile;
+}
+
+// create the model for users and expose it to our app
+module.exports = mongoose.model('User', userSchema);
+

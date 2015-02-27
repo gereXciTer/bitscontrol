@@ -1,21 +1,23 @@
 /**
 * Created with bitscontrol.
 * User: exciter
-* Date: 2014-12-30
-* Time: 07:38 PM
+* Date: 2015-02-27
+* Time: 07:22 PM
 */
 
 exports.init = function(app){
-  var Command = require('./../model/Command');
+  var Module = require('./../model/Module');
 
-  app.get('(/api)?/command', function (req, res, next) {
-    Command.find({
-      module: req.body.module,
-      owner: req.user._id
-    }, function(err, records) {
+  app.get('(/api)?/module', function (req, res) {
+    //     var query = Module.where({
+    //       owner: req.user._id
+    //     });
+    Module.find({owner: req.user._id}, function(err, records) {
       if (!err){ 
-        res.send(records);
+        console.log(records);
       }
+      
+
     });
   });
 

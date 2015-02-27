@@ -3,14 +3,38 @@ var HeaderView = require('views/home/header-view');
 var HomePageView = require('views/home/home-page-view');
 var utils = require('lib/utils');
 
+var CommandCollection = require('models/command-collection');
+
 module.exports = Controller.extend({
   beforeAction: function() {
     this.constructor.__super__.beforeAction.apply(this, arguments);
     this.reuse('header', HeaderView, {region: 'header'});
   },
-
-  index: function() {
+  
+  index: function(){
     this.view = new HomePageView({region: 'main'});
+    var commandCollection = new CommandCollection({
+      deskId: '1'
+    });
+    commandCollection.fetch({
+      success: function(collection){
+//         var commandCollectionView = new CommandCollectionView({
+//           region: 'commands',
+//           collection: collection
+//         });
+//         this.view.subview('commands', commandCollectionView);
+      }
+    });
+  },
+
+  command: function() {
+    this.view = new HomePageView({region: 'main'});
+    
+//     Chaplin.mediator.publish('auth:update', function(status){
+//       if(!status){
+//         utils.redirectTo('home#login');
+//       }
+//     });
     
     Chaplin.mediator.unsubscribe('pushCommand');
     Chaplin.mediator.subscribe('pushCommand', function(params){

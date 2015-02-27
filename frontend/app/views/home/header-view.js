@@ -8,7 +8,7 @@ module.exports = View.extend({
   template: require('./templates/header'),
   attach: function(args){
     var loginBtn = this.$el.find('.loginBtn');
-    var updateBtn = function(){
+    var updateBtn = function(callback){
       loginBtn.html('Login');
       loginBtn.attr('href', utils.reverse('home#login', []));
       if(loginBtn){
@@ -20,6 +20,14 @@ module.exports = View.extend({
             if(data.username){
               loginBtn.html('Logout (' + data.username + ')');
               loginBtn.attr('href', utils.reverse('home#logout', []));
+            }
+            if(callback){
+              callback(true);
+            }
+          },
+          error: function(){
+            if(callback){
+              callback(false);
             }
           }
         });
