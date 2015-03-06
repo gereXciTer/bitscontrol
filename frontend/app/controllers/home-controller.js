@@ -3,6 +3,10 @@ var HeaderView = require('views/home/header-view');
 var HomePageView = require('views/home/home-page-view');
 var utils = require('lib/utils');
 
+var ModuleCollectionView = require('views/module/modules-view');
+var CommandCollectionView = require('views/command/commands-view');
+
+var ModuleCollection = require('models/module-collection');
 var CommandCollection = require('models/command-collection');
 
 module.exports = Controller.extend({
@@ -12,19 +16,29 @@ module.exports = Controller.extend({
   },
   
   index: function(){
+    var self = this;
     this.view = new HomePageView({region: 'main'});
-    var commandCollection = new CommandCollection({
-      deskId: '1'
-    });
-    commandCollection.fetch({
+    var moduleCollection = new ModuleCollection();
+    moduleCollection.fetch({
       success: function(collection){
-//         var commandCollectionView = new CommandCollectionView({
-//           region: 'commands',
-//           collection: collection
-//         });
-//         this.view.subview('commands', commandCollectionView);
+        var moduleCollectionView = new ModuleCollectionView({
+          region: 'modules',
+          collection: collection
+        });
+        self.view.subview('modules', moduleCollectionView);
       }
     });
+    var commandCollection = new CommandCollection();
+    commandCollection.fetch({
+      success: function(collection){
+        var commandCollectionView = new CommandCollectionView({
+          region: 'commands',
+          collection: collection
+        });
+        self.view.subview('commands', commandCollectionView);
+      }
+    });
+
   },
 
   command: function() {

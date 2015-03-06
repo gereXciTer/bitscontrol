@@ -39,9 +39,6 @@ module.exports = View.extend({
         } catch(e){
           form.find('.error').html('Request failed');
         }
-        if(jqXHR.getResponseHeader('Location')){
-          utils.redirectTo({url: jqXHR.getResponseHeader('Location')});
-        }
       }
     });
     

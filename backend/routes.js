@@ -6,8 +6,9 @@ module.exports = function(app, passport) {
     console.log(req.query);
     res.send(200);
 	});
-
+  
   app.post('/api/*', isLoggedIn);
+  app.get('/api/*', isLoggedIn);
   app.post('/checkauth', isLoggedIn, function(req, res, next){
     res.send(req.user.getProfile());
   });
@@ -31,15 +32,13 @@ module.exports = function(app, passport) {
         if (err) { return next(err) }
         if (!user) {
           req.session.messages =  [info.message];
-          res.setHeader("Access-Control-Expose-Headers", "Location");
-          res.setHeader("Location", "/login");
+          res.location("/login");
           res.status(404).send({errorText: info.message});;
           res.end();
         }else{
           req.login(user, function(err) {
             if (err) { return next(err); }
-            res.setHeader("Access-Control-Expose-Headers", "Location");
-            res.setHeader("Location", "/");
+            res.location("/");
             res.send(200);
           });
         }
@@ -50,13 +49,11 @@ module.exports = function(app, passport) {
     app.post('/register', function(req, res, next) {
       var params = req.body;
       if(params.password.length < 6){
-        res.setHeader("Access-Control-Expose-Headers", "Location");
-        res.setHeader("Location", "/register");
+        res.location("/register");
         res.status(412).send({errorText:"Password too short (at least 6 symbols)"});
         res.end();
       }else if(params.password !== params.password_repeat){
-        res.setHeader("Access-Control-Expose-Headers", "Location");
-        res.setHeader("Location", "/register");
+        res.location("/register");
         res.status(417).send({errorText:"Passwords don't match"});
         res.end();
       }else{
@@ -64,8 +61,7 @@ module.exports = function(app, passport) {
           if (err) { return next(err) }
           if (!user) {
             req.session.messages =  [info.message];
-            res.setHeader("Access-Control-Expose-Headers", "Location");
-            res.setHeader("Location", "/login");
+            res.location("/login");
             res.status(404).send({errorText: info.message});;
             res.end();
           }else{
@@ -220,7 +216,6 @@ function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())
 		return next();
 
-  res.setHeader("Access-Control-Expose-Headers", "Location");
-  res.setHeader("Location", "/login");
+  res.location("/login");
   res.send(403);
 }

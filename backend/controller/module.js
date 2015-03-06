@@ -9,19 +9,19 @@ exports.init = function(app){
   var Module = require('./../model/Module');
 
   app.get('(/api)?/module', function (req, res) {
-    //     var query = Module.where({
-    //       owner: req.user._id
-    //     });
-    Module.find({owner: req.user._id}, function(err, records) {
-      if (!err){ 
-        console.log(records);
-      }
-      
-
-    });
+    if(req.user){
+      Module.find({owner: req.user._id}, function(err, records) {
+        if (!err){ 
+          res.send(records);
+        }
+      });
+    }else{
+      res.location("/login").send(412);
+      res.end();
+    }
   });
 
-  app.post('(/api)?/command', function (req, res) {
+  app.post('(/api)?/module', function (req, res) {
     var query = Command.where({
       module: req.body.module,
       owner: req.user._id
@@ -55,18 +55,6 @@ exports.init = function(app){
       }
     });
 
-  });
-
-  app.post('(/api)?/command/execute', function (req, res) {
-    var currentModule = req.body.module;
-    var command = req.body.command;
-
-    if(command && currentModule){
-      var context = vm.createContext(modules[currentModule]().public());
-      vm.runInContext(command, context);
-      //     console.log(util.inspect(context));
-      res.send(JSON.stringify(context));
-    }
   });
 
 }

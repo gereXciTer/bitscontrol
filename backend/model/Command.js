@@ -11,6 +11,7 @@ var commandSchema = mongoose.Schema({
 
     module: String,
     command: String,
+    name: {type: String, required: true},
     owner: String,
     createdOn: { type: Date, default: Date.now },
     active: Boolean

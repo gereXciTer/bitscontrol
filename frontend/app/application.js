@@ -1,8 +1,12 @@
+var utils = require('lib/utils');
 // The application object.
 module.exports = Application = Chaplin.Application.extend({
-  // start: function() {
-  //   // You can fetch some data here and start app
-  //   // (by calling `super`) after that.
-  //   this.constructor.__super__.start.call(this);
-  // }
+  start: function() {
+    $(document).ajaxError(function (e, xhr, options) {
+        if(xhr.getResponseHeader('Location')){
+          utils.redirectTo({url: xhr.getResponseHeader('Location')});
+        }
+    });
+    this.constructor.__super__.start.call(this);
+  }
 })

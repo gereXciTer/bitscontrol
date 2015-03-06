@@ -9,14 +9,37 @@ exports.init = function(app){
   var Command = require('./../model/Command');
 
   app.get('(/api)?/command', function (req, res, next) {
-    Command.find({
-      module: req.body.module,
-      owner: req.user._id
-    }, function(err, records) {
-      if (!err){ 
-        res.send(records);
+    
+    if(req.user){
+      var criteria = {
+        owner: req.user._id
+      };
+      if(req.body.module){
+        criteria['module'] = req.body.module;
       }
-    });
+      Command.find(criteria, function(err, records) {
+        if (!err){ 
+          res.send(records);
+        }
+      });
+    }else{
+      res.location("/login").send(412);
+      res.end();
+    }
+    
+  });
+
+  app.get('(/api)?/command/:id', function (req, res, next) {
+      var criteria = {
+        _id: req.params.id,
+        owner: req.user._id
+      };
+      Command.find(criteria, function(err, records) {
+        if (!err){ 
+          res.send(records);
+        }
+      });
+    
   });
 
   app.post('(/api)?/command', function (req, res) {
@@ -35,6 +58,7 @@ exports.init = function(app){
         });
       } else {
         var newRecord = new Command({
+          name: req.body.name,
           module: req.body.module,
           command: req.body.command,
           owner: req.user._id
