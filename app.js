@@ -58,7 +58,6 @@ function handleError(req, res, err) {
   });
 }
 
-var modules = require('./backend/modules/main');
 var commandController = require('./backend/controller/command').init(app, mongoose);
 var moduleController = require('./backend/controller/module').init(app, mongoose);
 

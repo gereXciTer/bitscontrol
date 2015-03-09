@@ -4,13 +4,38 @@
 * Date: 2015-02-27
 * Time: 07:22 PM
 */
+var modules = require('./../modules/main');
 
 exports.init = function(app){
   var Module = require('./../model/Module');
 
   app.get('(/api)?/module', function (req, res) {
     if(req.user){
-      Module.find({owner: req.user._id}, function(err, records) {
+      var createstaticlist = function(moduleName){
+        Module.find({name: moduleName, static: true}, function(err, records) {
+          if (!err){ 
+            if(!records.length){
+              var newRecord = new Module({
+                name: moduleName,
+                public: true,
+                active: true,
+                static: true
+              });
+              newRecord.save(function(err) {
+                if(err) {
+                  handleError(req, res, err);
+                } else {
+                  console.log(moduleName);
+                }
+              });
+            }
+          }
+        });
+      };
+      //for(var moduleName in modules){
+      //  createstaticlist(moduleName);
+      //}
+      Module.find({$or:[ {'owner': req.user._id}, {'static':true} ]}, function(err, records) {
         if (!err){ 
           res.send(records);
         }
@@ -22,21 +47,20 @@ exports.init = function(app){
   });
 
   app.post('(/api)?/module', function (req, res) {
-    var query = Command.where({
-      module: req.body.module,
+    var query = Module.where({
       owner: req.user._id
     });
     query.findOne(function(err, record) {
       if(err) {
         handleError(req, res, err);
       } else if(record != null) {
-        console.log("Command for module " + record.module + " already exists");
+        console.log("Module " + record._id + " already exists");
         res.status(400).send({
           errorCode: 400,
-          errorMessage: "Command for module " + record.module + " already exists"
+          errorMessage: "Module " + record._id + " already exists"
         });
       } else {
-        var newRecord = new Command({
+        var newRecord = new Module({
           module: req.body.module,
           command: req.body.command,
           owner: req.user._id

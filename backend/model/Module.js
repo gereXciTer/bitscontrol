@@ -11,10 +11,11 @@ var moduleSchema = mongoose.Schema({
 
     name: String,
     code: String,
-    public: String,
+    public: Boolean,
     owner: String,
     createdOn: { type: Date, default: Date.now },
-    active: Boolean
+    active: Boolean,
+    static: { type: Boolean, default: false }
 
 });
 
