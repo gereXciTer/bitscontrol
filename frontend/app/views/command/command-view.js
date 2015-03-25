@@ -37,10 +37,14 @@ module.exports = View.extend({
   },
   pushCommand: function(e){
     e.preventDefault();
-    Chaplin.mediator.publish('pushCommand', {
+    
+    this.model.set({
       name: this.$el.find('input[name="name"]').val(),
       command: this.editor.session.getValue(),
-      module: 'body',
+      module: 'body'
+    });
+    Chaplin.mediator.publish('pushCommand', {
+      model: this.model,
       output: $(e.target).parents('.row').find('.output')
     });
   }

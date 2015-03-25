@@ -45,29 +45,7 @@ module.exports = Controller.extend({
 //       }
 //     });
     
-    Chaplin.mediator.unsubscribe('pushCommand');
-    Chaplin.mediator.subscribe('pushCommand', function(params){
-      $.ajax({
-        type: 'POST',
-        url: utils.getUrlBase() + 'api/command',
-        traditional: true,
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({
-          module: params.module,
-          command: params.command
-        }),
-        success: function(data){
-          params.output.html('<div data-alert class="alert-box"><a href="#" class="close">&times;</a></div>');
-        },
-        error: function(jqXHR){
-          if(jqXHR.getResponseHeader('Location')){
-            utils.redirectTo({url: jqXHR.getResponseHeader('Location')});
-          }else{
-            params.output.html(jqXHR.responseJSON ? jqXHR.responseJSON.errorMessage : 'Unknown error');
-          }
-        }
-      });
-    });
+
   },
   
   login: function(){

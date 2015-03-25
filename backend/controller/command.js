@@ -47,6 +47,27 @@ exports.init = function(app){
     
   });
 
+  app.put('/api/command/:id', function (req, res, next) {
+      var criteria = {
+        _id: req.params.id,
+        owner: req.user._id
+      };
+      Command.where(criteria).update({
+        name: req.body.name,
+        module: req.body.module,
+        command: req.body.command
+      }, function(err, numberAffected){
+        if (!err){ 
+          if(numberAffected){
+            res.send(200);
+          }else{
+            res.send(404);
+          }
+        }
+      });
+    
+  });
+
   app.post('/api/command', function (req, res) {
     var query = Command.where({
       module: req.body.module,
