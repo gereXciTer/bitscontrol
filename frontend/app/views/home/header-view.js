@@ -9,6 +9,7 @@ module.exports = View.extend({
   attach: function(args){
     var loginBtn = this.$el.find('.loginBtn');
     var updateBtn = function(callback){
+      $('.auth-required').addClass('hidden');
       loginBtn.html('Login');
       loginBtn.attr('href', utils.reverse('home#login', []));
       if(loginBtn){
@@ -18,6 +19,7 @@ module.exports = View.extend({
           contentType: "application/json; charset=utf-8",
           success: function(data){
             if(data.username){
+              $('.auth-required').removeClass('hidden');
               loginBtn.html('Logout (' + data.username + ')');
               loginBtn.attr('href', utils.reverse('home#logout', []));
             }
@@ -26,6 +28,7 @@ module.exports = View.extend({
             }
           },
           error: function(){
+            $('.auth-required').addClass('hidden');
             if(callback){
               callback(false);
             }
