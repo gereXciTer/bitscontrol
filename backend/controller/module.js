@@ -45,6 +45,27 @@ exports.init = function(app){
       res.end();
     }
   });
+  
+    app.get('/api/module/:id', function (req, res, next) {
+      var criteria = {
+        _id: req.params.id
+      };
+      Module.findOne(criteria, function(err, record) {
+        if (!err){
+          if(record){
+            if(!record.public && owner !== req.user._id){
+              res.location("/module").send(403);
+            }else{
+              res.send(record);
+            }
+          }else{
+            res.location("/module").send(404);
+          }
+        }
+        
+      });
+    
+  });
 
   app.post('(/api)?/module', function (req, res) {
     var query = Module.where({

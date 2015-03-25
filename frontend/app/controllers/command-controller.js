@@ -1,15 +1,25 @@
 var Controller = require('controllers/base/controller');
-var HeaderView = require('views/home/header-view');
 var utils = require('lib/utils');
 
 var CommandView = require('views/command/command-view');
+var CommandCollectionView = require('views/command/commands-view');
 
-CommandModel = require('models/command');
+var CommandModel = require('models/command');
+var CommandCollection = require('models/command-collection');
 
 module.exports = Controller.extend({
-  beforeAction: function() {
-    this.constructor.__super__.beforeAction.apply(this, arguments);
-    this.reuse('header', HeaderView, {region: 'header'});
+  
+  index: function(){
+    var self = this;
+    var commandCollection = new CommandCollection();
+    commandCollection.fetch({
+      success: function(collection){
+        self.view = new CommandCollectionView({
+          region: 'main',
+          collection: collection
+        });
+      }
+    });
   },
 
   edit: function(params){

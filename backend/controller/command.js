@@ -8,14 +8,14 @@
 exports.init = function(app){
   var Command = require('./../model/Command');
 
-  app.get('(/api)?/command', function (req, res, next) {
+  app.get('/api/command', function (req, res, next) {
     
     if(req.user){
       var criteria = {
         owner: req.user._id
       };
-      if(req.body.module){
-        criteria['module'] = req.body.module;
+      if(req.query.module){
+        criteria['module'] = req.query.module;
       }
       Command.find(criteria, function(err, records) {
         if (!err){ 
@@ -29,20 +29,25 @@ exports.init = function(app){
     
   });
 
-  app.get('(/api)?/command/:id', function (req, res, next) {
+  app.get('/api/command/:id', function (req, res, next) {
       var criteria = {
         _id: req.params.id,
         owner: req.user._id
       };
-      Command.find(criteria, function(err, records) {
+      Command.findOne(criteria, function(err, record) {
         if (!err){ 
-          res.send(records);
+          if(record){
+            res.send(record);
+          }else{
+            res.location("/command").send(404);
+          }
         }
+        
       });
     
   });
 
-  app.post('(/api)?/command', function (req, res) {
+  app.post('/api/command', function (req, res) {
     var query = Command.where({
       module: req.body.module,
       owner: req.user._id
@@ -79,7 +84,7 @@ exports.init = function(app){
 
   });
 
-  app.post('(/api)?/command/execute', function (req, res) {
+  app.post('/api/command/execute', function (req, res) {
     var currentModule = req.body.module;
     var command = req.body.command;
 
