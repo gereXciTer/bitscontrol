@@ -16,6 +16,7 @@ module.exports = View.extend({
   template: require('./templates/command'),
   events: {
     'click .pushcommand': 'pushCommand',
+    'click .savecommand': 'saveCommand',
     'click .keystokeshelp': function(e){
       e.preventDefault();
       $('#keystokes-help').find('.content').height(Math.round($(window).height()*0.75));
@@ -36,6 +37,17 @@ module.exports = View.extend({
     });
   },
   pushCommand: function(e){
+    var output = $(e.target).parents('.row').find('.output');
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: this.model.url()
+    }).done(function( data ) {
+        output.html(data);
+    });
+    
+  },
+  saveCommand: function(e){
     e.preventDefault();
     
     this.model.set({
@@ -43,7 +55,7 @@ module.exports = View.extend({
       module: this.$el.find('select[name="module"]').val(),
       command: this.editor.session.getValue()
     });
-    Chaplin.mediator.publish('pushCommand', {
+    Chaplin.mediator.publish('saveCommand', {
       model: this.model,
       output: $(e.target).parents('.row').find('.output')
     });

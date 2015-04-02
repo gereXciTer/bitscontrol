@@ -38,8 +38,8 @@ module.exports = Controller.extend({
       }
     });
 
-    Chaplin.mediator.unsubscribe('pushCommand');
-    Chaplin.mediator.subscribe('pushCommand', function(params){
+    Chaplin.mediator.unsubscribe('saveCommand');
+    Chaplin.mediator.subscribe('saveCommand', function(params){
       params.model.save(null, {
         success: function(record, response){
           params.output.html(response.message);
@@ -68,8 +68,8 @@ module.exports = Controller.extend({
       }
     });
 
-    Chaplin.mediator.unsubscribe('pushCommand');
-    Chaplin.mediator.subscribe('pushCommand', function(params){
+    Chaplin.mediator.unsubscribe('saveCommand');
+    Chaplin.mediator.subscribe('saveCommand', function(params){
       params.model.save(null, {
         success: function(record, response){
           params.output.html('Command created successfully');

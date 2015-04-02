@@ -18,4 +18,9 @@ var commandSchema = mongoose.Schema({
 
 });
 
+var Module = require('./Module');
+commandSchema.methods.getModule = function getModule (callback) {
+  return Module.findOne({ _id: this.module }, callback);
+}
+
 module.exports = mongoose.model('Command', commandSchema);

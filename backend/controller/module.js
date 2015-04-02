@@ -6,7 +6,7 @@
 */
 var modules = require('./../modules/main');
 
-exports.init = function(app){
+exports.init = function(app, vm){
   var Module = require('./../model/Module');
 
   app.get('(/api)?/module', function (req, res) {

@@ -5,7 +5,9 @@
 * Time: 07:38 PM
 */
 
-exports.init = function(app){
+var modules = require('./../modules/main');
+
+exports.init = function(app, vm){
   var Command = require('./../model/Command');
 
   app.get('/api/command', function (req, res, next) {
@@ -121,16 +123,33 @@ exports.init = function(app){
     
   });
 
-  app.post('/api/command/execute', function (req, res) {
-    var currentModule = req.body.module;
-    var command = req.body.command;
+  app.post('/api/command/:id', function (req, res) {
+    var criteria = {
+      _id: req.params.id,
+      owner: req.user._id
+    };
+    Command.findOne(criteria, function(err, record) {
+      
+      if (!err){ 
+        if(record){
+          record.getModule(function(err, module){
+            if(!err && module.name){
+              var context = vm.createContext(modules[module.name]().public());
+              vm.runInContext(record.command, context);
+              //     console.log(util.inspect(context));
+              res.send(JSON.stringify(context));
+            }else{
+              res.location("/command/" + req.params.id).send(404);
+            }
+          });
+        }else{
+          res.location("/command/" + req.params.id).send(404);
+        }
+      }else{
+        res.location("/command/" + req.params.id).send(404);
+      }
 
-    if(command && currentModule){
-      var context = vm.createContext(modules[currentModule]().public());
-      vm.runInContext(command, context);
-      //     console.log(util.inspect(context));
-      res.send(JSON.stringify(context));
-    }
+    });
   });
 
 }
