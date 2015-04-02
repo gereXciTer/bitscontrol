@@ -9,6 +9,7 @@ var utils = require('lib/utils');
 
 module.exports = Collection.extend({
 	defaults: {},
+  model: require('./command'),
   initialize: function(options) {
     options || (options = {});
     this.options = options;

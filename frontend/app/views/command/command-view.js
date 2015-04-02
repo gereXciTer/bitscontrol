@@ -40,8 +40,8 @@ module.exports = View.extend({
     
     this.model.set({
       name: this.$el.find('input[name="name"]').val(),
-      command: this.editor.session.getValue(),
-      module: 'body'
+      module: this.$el.find('select[name="module"]').val(),
+      command: this.editor.session.getValue()
     });
     Chaplin.mediator.publish('pushCommand', {
       model: this.model,

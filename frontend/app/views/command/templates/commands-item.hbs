@@ -1,1 +1,6 @@
-<li><a href="{{url 'command#edit' _id}}">{{#if name}}{{name}}{{^}}Unnamed{{/if}}</li>
+  <td>
+    <a href="{{url 'command#edit' _id}}">{{#if name}}{{name}}{{^}}Unnamed{{/if}}</a>
+  </td>
+  <td class="right">
+    <a href="#" data-id="{{_id}}" class="deleteCommand">delete</a>
+  </td>

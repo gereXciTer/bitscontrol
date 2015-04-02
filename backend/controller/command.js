@@ -59,7 +59,7 @@ exports.init = function(app){
       }, function(err, numberAffected){
         if (!err){ 
           if(numberAffected){
-            res.send(200);
+            res.status(200).send({status: "success", message: "Command updated successfully"});
           }else{
             res.send(404);
           }
@@ -71,6 +71,7 @@ exports.init = function(app){
   app.post('/api/command', function (req, res) {
     var query = Command.where({
       module: req.body.module,
+      name: req.body.name,
       owner: req.user._id
     });
     query.findOne(function(err, record) {
@@ -78,8 +79,8 @@ exports.init = function(app){
         handleError(req, res, err);
       } else if(record != null) {
         console.log("Command for module " + record.module + " already exists");
-        res.status(400).send({
-          errorCode: 400,
+        res.status(409).send({
+          errorCode: 409,
           errorMessage: "Command for module " + record.module + " already exists"
         });
       } else {
@@ -103,6 +104,21 @@ exports.init = function(app){
       }
     });
 
+  });
+
+  app.delete('/api/command/:id', function (req, res, next) {
+      var criteria = {
+        _id: req.params.id,
+        owner: req.user._id
+      };
+      Command.findOne(criteria).remove(function(err){
+        if (!err){ 
+          res.status(200).send({status: "success", message: "Command updated successfully"});
+        }else{
+          res.send(404);
+        }
+      });
+    
   });
 
   app.post('/api/command/execute', function (req, res) {

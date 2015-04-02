@@ -12,16 +12,34 @@ var utils = require('lib/utils');
 module.exports = CollectionView.extend({
   autoRender: true,
   className: 'commands-list',
-  tagName: 'ul',
+  tagName: 'table',
+  itemSelector: 'tr',
   itemView: View.extend({
     autoRender: true,
     className: 'commands-item',
-    events: {
-
-    },
-    template: require('./templates/commands-item'),
+    tagName: 'tr',
+    template: require('./templates/commands-item')
   }),
   attach: function(args){
     this.constructor.__super__.attach.apply(this, arguments);
+  },
+  events: {
+    'click .deleteCommand': 'deleteCommand',
+  },
+  deleteCommand: function(e){
+    var self = this;
+    e.preventDefault();
+    
+    if(confirm("are you sure want delete this item?")){
+      var record = this.collection.get($(e.target).attr('data-id'));
+      if(record){
+        record.destroy({
+          success: function(){
+            self.collection.fetch();
+          }
+        });
+      }
+    }
+
   }
 });

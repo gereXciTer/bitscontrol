@@ -10,5 +10,6 @@ var utils = require('lib/utils');
 
 module.exports = Model.extend({
 	defaults: {},
+  idAttribute: '_id',
 	urlRoot: utils.getUrlBase() + 'api/command/'
 });

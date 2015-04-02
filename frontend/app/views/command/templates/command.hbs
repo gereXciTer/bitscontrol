@@ -3,6 +3,11 @@
   </div> -->
   <div class="small-8 large-8 columns">
     <input type="text" name="name" value="{{{name}}}" placeholder="Enter command name" />
+    <select name="module">
+      {{#each modules}}
+        <option value="{{attributes._id}}" {{#equal attributes._id ../module }}selected="selected"{{/equal}}>{{attributes.name}}</option>
+      {{/each}}
+    </select>
     <div class="command panel" id="editor">{{{command}}}</div>
 <!-- var engine= getModule("engine");
 engine.on();

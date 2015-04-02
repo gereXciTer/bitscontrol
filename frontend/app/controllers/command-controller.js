@@ -6,6 +6,7 @@ var CommandCollectionView = require('views/command/commands-view');
 
 var CommandModel = require('models/command');
 var CommandCollection = require('models/command-collection');
+var ModuleCollection = require('models/module-collection');
 
 module.exports = Controller.extend({
 
@@ -24,18 +25,24 @@ module.exports = Controller.extend({
 
   edit: function(params){
     var self = this;
-    var command = new CommandModel({id: params.id});
+    var command = new CommandModel({_id: params.id});
     command.fetch({
       success: function(model, response, options){
-        self.view = new CommandView({region: 'main', model: model});
+        var moduleCollection = new ModuleCollection();
+        moduleCollection.fetch({
+          success: function(collection){
+            model.set('modules', collection.models);
+            self.view = new CommandView({region: 'main', model: model});
+          }
+        });
       }
     });
 
     Chaplin.mediator.unsubscribe('pushCommand');
     Chaplin.mediator.subscribe('pushCommand', function(params){
-      params.model.save({
-        success: function(data){
-          params.output.html('<div data-alert class="alert-box"><a href="#" class="close">&times;</a></div>');
+      params.model.save(null, {
+        success: function(record, response){
+          params.output.html(response.message);
         },
         error: function(jqXHR){
           if(jqXHR.getResponseHeader('Location')){
@@ -45,27 +52,7 @@ module.exports = Controller.extend({
           }
         }
       });
-//       $.ajax({
-//         type: 'POST',
-//         url: utils.getUrlBase() + 'api/command',
-//         traditional: true,
-//         contentType: "application/json; charset=utf-8",
-//         data: JSON.stringify({
-//           name: params.name,
-//           module: params.module,
-//           command: params.command
-//         }),
-//         success: function(data){
-//           params.output.html('<div data-alert class="alert-box"><a href="#" class="close">&times;</a></div>');
-//         },
-//         error: function(jqXHR){
-//           if(jqXHR.getResponseHeader('Location')){
-//             utils.redirectTo({url: jqXHR.getResponseHeader('Location')});
-//           }else{
-//             params.output.html(jqXHR.responseJSON ? jqXHR.responseJSON.errorMessage : 'Unknown error');
-//           }
-//         }
-//       });
+
     });
 
   },
@@ -73,29 +60,22 @@ module.exports = Controller.extend({
   create: function(params){
     var self = this;
     var command = new CommandModel();
-    command.fetch({
-      success: function(model, response, options){
-        self.view = new CommandView({region: 'main', model: model});
+    var moduleCollection = new ModuleCollection();
+    moduleCollection.fetch({
+      success: function(collection){
+        command.set('modules', collection.models);
+        self.view = new CommandView({region: 'main', model: command});
       }
     });
 
     Chaplin.mediator.unsubscribe('pushCommand');
     Chaplin.mediator.subscribe('pushCommand', function(params){
-      $.ajax({
-        type: 'POST',
-        url: utils.getUrlBase() + 'api/command',
-        traditional: true,
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({
-          name: params.name,
-          module: params.module,
-          command: params.command
-        }),
-        success: function(data){
-          params.output.html('<div data-alert class="alert-box"><a href="#" class="close">&times;</a></div>');
+      params.model.save(null, {
+        success: function(record, response){
+          params.output.html('Command created successfully');
         },
-        error: function(jqXHR){
-          if(jqXHR.getResponseHeader('Location')){
+        error: function(record, jqXHR){
+          if(jqXHR.getResponseHeader && jqXHR.getResponseHeader('Location')){
             utils.redirectTo({url: jqXHR.getResponseHeader('Location')});
           }else{
             params.output.html(jqXHR.responseJSON ? jqXHR.responseJSON.errorMessage : 'Unknown error');
@@ -105,6 +85,7 @@ module.exports = Controller.extend({
     });
 
   }
+
 
 
 });

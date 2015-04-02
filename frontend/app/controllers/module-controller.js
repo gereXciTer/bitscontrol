@@ -26,13 +26,13 @@ module.exports = Controller.extend({
 
   edit: function(params){
     var self = this;
-    var moduleModel = new ModuleModel({id: params.id});
+    var moduleModel = new ModuleModel({_id: params.id});
     moduleModel.fetch({
       success: function(model, response, options){
         self.view = new ModuleView({region: 'main', model: model});
         var commandCollection = new CommandCollection();
         commandCollection.fetch({
-          data: {module: model.get("name")},
+          data: {module: params.id},
           success: function(collection){
             var commandCollectionView = new CommandCollectionView({
               region: 'commands',
