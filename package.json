@@ -29,7 +29,7 @@
     "passport-twitter": "~1.0.2",
     "passport-google-oauth": "~0.1.5",
     "bcryptjs": "~2.1.0",
-    "ejs": "~2.3.1"
+    "ejs": "~2.5.5"
   },
   "devDependencies": {
   }
